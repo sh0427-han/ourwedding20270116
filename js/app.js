@@ -252,6 +252,39 @@ function createCalendarFile() {
     showToast("캘린더 일정 파일을 만들었습니다.");
 }
 
+function createCalendarUrl(provider) {
+    const eventStart = new Date(weddingConfig.weddingDate);
+    const eventEnd = new Date(eventStart.getTime() + 2 * 60 * 60 * 1000);
+    const title = `${weddingConfig.groomName} · ${weddingConfig.brideName} 결혼식`;
+    const location = `${weddingConfig.venueName} ${weddingConfig.venueAddress}`;
+    const description = "저희 두 사람의 결혼식에 초대합니다.";
+
+    if (provider === "google") {
+        const formatGoogleDate = (date) => (
+            date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")
+        );
+        const parameters = new URLSearchParams({
+            action: "TEMPLATE",
+            text: title,
+            dates: `${formatGoogleDate(eventStart)}/${formatGoogleDate(eventEnd)}`,
+            details: description,
+            location
+        });
+        return `https://calendar.google.com/calendar/render?${parameters}`;
+    }
+
+    const parameters = new URLSearchParams({
+        path: "/calendar/action/compose",
+        rru: "addevent",
+        subject: title,
+        startdt: eventStart.toISOString(),
+        enddt: eventEnd.toISOString(),
+        body: description,
+        location
+    });
+    return `https://outlook.live.com/calendar/0/deeplink/compose?${parameters}`;
+}
+
 function updateMapLinks() {
     const query = encodeURIComponent(
         `${weddingConfig.venueName} ${weddingConfig.venueAddress}`
@@ -271,14 +304,44 @@ function bindInteractions() {
     const opening = document.querySelector("#opening");
     const drawer = document.querySelector("#menu-drawer");
     const contactModal = document.querySelector("#contact-modal");
+    const calendarModal = document.querySelector("#calendar-modal");
     const galleryModal = document.querySelector("#gallery-modal");
     const menuToggle = document.querySelector("#menu-toggle");
     const musicToggle = document.querySelector("#music-toggle");
     const music = document.querySelector("#background-music");
+    const bottomNav = document.querySelector(".bottom-nav");
+    const hero = document.querySelector("#home");
 
-    document.querySelector("#opening-skip").addEventListener("click", () => {
-        opening.classList.add("is-hidden");
+    const updateBottomNavVisibility = () => {
+        const revealPoint = hero.offsetTop + hero.offsetHeight * 0.82;
+        bottomNav.classList.toggle(
+            "is-cover-hidden",
+            window.scrollY < revealPoint
+        );
+    };
+    updateBottomNavVisibility();
+    window.addEventListener("scroll", updateBottomNavVisibility, {
+        passive: true
     });
+    window.addEventListener("resize", updateBottomNavVisibility);
+
+    const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    ).matches;
+    let openingFinished = false;
+    const finishOpening = () => {
+        if (openingFinished) {
+            return;
+        }
+        openingFinished = true;
+        opening.classList.add("is-leaving");
+        window.setTimeout(() => {
+            opening.classList.add("is-hidden");
+            opening.setAttribute("aria-hidden", "true");
+        }, prefersReducedMotion ? 20 : 620);
+    };
+    window.setTimeout(finishOpening, prefersReducedMotion ? 250 : 2600);
+    opening.addEventListener("click", finishOpening);
 
     menuToggle.addEventListener("click", () => {
         const willOpen = !drawer.classList.contains("is-open");
@@ -310,6 +373,12 @@ function bindInteractions() {
     document.querySelectorAll("[data-close-modal]").forEach((button) => {
         button.addEventListener("click", () => {
             setModalState(contactModal, false);
+        });
+    });
+
+    document.querySelectorAll("[data-close-calendar-modal]").forEach((button) => {
+        button.addEventListener("click", () => {
+            setModalState(calendarModal, false);
         });
     });
 
@@ -356,8 +425,13 @@ function bindInteractions() {
     document.querySelector("[data-menu-share]").addEventListener("click", shareWedding);
 
     document.querySelector("#font-size-toggle").addEventListener("click", (event) => {
-        const isLarge = document.body.classList.toggle("large-text");
+        const isLarge = document.documentElement.classList.toggle("large-text");
         event.currentTarget.setAttribute("aria-pressed", String(isLarge));
+        event.currentTarget.textContent = isLarge ? "기본 글씨" : "큰 글씨";
+        window.localStorage.setItem(
+            "wedding-font-size",
+            isLarge ? "large" : "default"
+        );
         showToast(isLarge ? "큰 글씨로 표시합니다." : "기본 글씨로 표시합니다.");
     });
 
@@ -412,9 +486,24 @@ function bindInteractions() {
         }
     });
 
-    document.querySelector("#calendar-save-button").addEventListener(
+    document.querySelector("#calendar-save-button").addEventListener("click", () => {
+        setModalState(calendarModal, true);
+    });
+
+    document.querySelectorAll("[data-calendar-provider]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const calendarUrl = createCalendarUrl(button.dataset.calendarProvider);
+            window.open(calendarUrl, "_blank", "noopener,noreferrer");
+            setModalState(calendarModal, false);
+        });
+    });
+
+    document.querySelector("[data-download-calendar]").addEventListener(
         "click",
-        createCalendarFile
+        () => {
+            createCalendarFile();
+            setModalState(calendarModal, false);
+        }
     );
 
     document.addEventListener("keydown", (event) => {
@@ -423,12 +512,20 @@ function bindInteractions() {
         }
         setModalState(drawer, false);
         setModalState(contactModal, false);
+        setModalState(calendarModal, false);
         setModalState(galleryModal, false);
         menuToggle.setAttribute("aria-expanded", "false");
     });
 }
 
 function initializeWeddingCard() {
+    const fontSizePreference = window.localStorage.getItem("wedding-font-size");
+    const fontSizeToggle = document.querySelector("#font-size-toggle");
+    if (fontSizePreference === "large") {
+        document.documentElement.classList.add("large-text");
+        fontSizeToggle.setAttribute("aria-pressed", "true");
+        fontSizeToggle.textContent = "기본 글씨";
+    }
     bindConfigValues();
     renderCalendar();
     updateCountdown();
