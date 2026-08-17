@@ -38,9 +38,9 @@
                 <span class="opening__ampersand">&amp;</span>
                 <span data-bride-name>신부 이름</span>
             </p>
-            <button id="opening-skip" class="button button--dark" type="button">
-                초대장 열기
-            </button>
+            <div class="opening__progress" aria-hidden="true">
+                <span></span>
+            </div>
         </div>
     </div>
 
@@ -286,7 +286,7 @@
                 소중한 날을 잊지 않고 확인할 수 있습니다.
             </p>
             <button id="calendar-save-button" class="button button--outline" type="button">
-                캘린더에 일정 저장
+                캘린더에 일정 추가
             </button>
         </section>
 
@@ -404,6 +404,36 @@
                 <div><span>신랑 어머니</span><strong data-groom-mother>신랑 어머니</strong><a data-groom-mother-phone-link href="#">전화</a></div>
                 <div><span>신부 아버지</span><strong data-bride-father>신부 아버지</strong><a data-bride-father-phone-link href="#">전화</a></div>
                 <div><span>신부 어머니</span><strong data-bride-mother>신부 어머니</strong><a data-bride-mother-phone-link href="#">전화</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar-modal" class="modal" aria-hidden="true">
+        <button class="modal__backdrop" type="button" aria-label="캘린더 선택 닫기" data-close-calendar-modal></button>
+        <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="calendar-modal-title">
+            <div class="modal__header">
+                <div>
+                    <p>ADD TO CALENDAR</p>
+                    <h2 id="calendar-modal-title">캘린더 선택</h2>
+                </div>
+                <button type="button" aria-label="캘린더 선택 닫기" data-close-calendar-modal>닫기</button>
+            </div>
+            <p class="calendar-options__description">
+                사용하시는 캘린더를 선택해주세요.
+            </p>
+            <div class="calendar-options">
+                <button type="button" data-calendar-provider="google">
+                    <strong>Google 캘린더</strong>
+                    <span>Google 계정의 일정 등록 화면을 엽니다.</span>
+                </button>
+                <button type="button" data-calendar-provider="outlook">
+                    <strong>Outlook 캘린더</strong>
+                    <span>Microsoft Outlook 일정 등록 화면을 엽니다.</span>
+                </button>
+                <button type="button" data-download-calendar>
+                    <strong>Apple · 기타 캘린더</strong>
+                    <span>표준 일정 파일(.ics)을 열어 추가합니다.</span>
+                </button>
             </div>
         </div>
     </div>
