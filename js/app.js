@@ -27,7 +27,6 @@ const weddingConfig = {
     brideAccount: "000-0000-0000",
     brideAccountOwner: "신부 이름",
     movieUrl: "",
-    photoShareUrl: "",
     backgroundMusicUrl: ""
 };
 
@@ -215,76 +214,6 @@ function openGallery(index) {
     setModalState(galleryModal, true);
 }
 
-function createCalendarFile() {
-    const eventStart = new Date(weddingConfig.weddingDate);
-    const eventEnd = new Date(eventStart.getTime() + 2 * 60 * 60 * 1000);
-    const formatDate = (date) => date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-    const title = `${weddingConfig.groomName} · ${weddingConfig.brideName} 결혼식`;
-    const lines = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Our Wedding//Wedding Reminder//KO",
-        "CALSCALE:GREGORIAN",
-        "BEGIN:VEVENT",
-        `DTSTART:${formatDate(eventStart)}`,
-        `DTEND:${formatDate(eventEnd)}`,
-        `SUMMARY:${title}`,
-        `LOCATION:${weddingConfig.venueName} ${weddingConfig.venueAddress}`,
-        "BEGIN:VALARM",
-        "TRIGGER:-P1D",
-        "ACTION:DISPLAY",
-        `DESCRIPTION:${title}`,
-        "END:VALARM",
-        "END:VEVENT",
-        "END:VCALENDAR"
-    ];
-    const blob = new Blob([lines.join("\r\n")], {
-        type: "text/calendar;charset=utf-8"
-    });
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = "wedding-reminder.ics";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(downloadUrl);
-    showToast("캘린더 일정 파일을 만들었습니다.");
-}
-
-function createCalendarUrl(provider) {
-    const eventStart = new Date(weddingConfig.weddingDate);
-    const eventEnd = new Date(eventStart.getTime() + 2 * 60 * 60 * 1000);
-    const title = `${weddingConfig.groomName} · ${weddingConfig.brideName} 결혼식`;
-    const location = `${weddingConfig.venueName} ${weddingConfig.venueAddress}`;
-    const description = "저희 두 사람의 결혼식에 초대합니다.";
-
-    if (provider === "google") {
-        const formatGoogleDate = (date) => (
-            date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")
-        );
-        const parameters = new URLSearchParams({
-            action: "TEMPLATE",
-            text: title,
-            dates: `${formatGoogleDate(eventStart)}/${formatGoogleDate(eventEnd)}`,
-            details: description,
-            location
-        });
-        return `https://calendar.google.com/calendar/render?${parameters}`;
-    }
-
-    const parameters = new URLSearchParams({
-        path: "/calendar/action/compose",
-        rru: "addevent",
-        subject: title,
-        startdt: eventStart.toISOString(),
-        enddt: eventEnd.toISOString(),
-        body: description,
-        location
-    });
-    return `https://outlook.live.com/calendar/0/deeplink/compose?${parameters}`;
-}
-
 function updateMapLinks() {
     const query = encodeURIComponent(
         `${weddingConfig.venueName} ${weddingConfig.venueAddress}`
@@ -304,7 +233,6 @@ function bindInteractions() {
     const opening = document.querySelector("#opening");
     const drawer = document.querySelector("#menu-drawer");
     const contactModal = document.querySelector("#contact-modal");
-    const calendarModal = document.querySelector("#calendar-modal");
     const galleryModal = document.querySelector("#gallery-modal");
     const menuToggle = document.querySelector("#menu-toggle");
     const musicToggle = document.querySelector("#music-toggle");
@@ -338,9 +266,9 @@ function bindInteractions() {
         window.setTimeout(() => {
             opening.classList.add("is-hidden");
             opening.setAttribute("aria-hidden", "true");
-        }, prefersReducedMotion ? 20 : 620);
+        }, prefersReducedMotion ? 20 : 900);
     };
-    window.setTimeout(finishOpening, prefersReducedMotion ? 250 : 2600);
+    window.setTimeout(finishOpening, prefersReducedMotion ? 250 : 4700);
     opening.addEventListener("click", finishOpening);
 
     menuToggle.addEventListener("click", () => {
@@ -373,12 +301,6 @@ function bindInteractions() {
     document.querySelectorAll("[data-close-modal]").forEach((button) => {
         button.addEventListener("click", () => {
             setModalState(contactModal, false);
-        });
-    });
-
-    document.querySelectorAll("[data-close-calendar-modal]").forEach((button) => {
-        button.addEventListener("click", () => {
-            setModalState(calendarModal, false);
         });
     });
 
@@ -474,45 +396,12 @@ function bindInteractions() {
         }
     });
 
-    document.querySelector("#photo-share-button").addEventListener("click", () => {
-        if (weddingConfig.photoShareUrl) {
-            window.open(
-                weddingConfig.photoShareUrl,
-                "_blank",
-                "noopener,noreferrer"
-            );
-        } else {
-            showToast("사진 공유 링크를 연결할 예정입니다.");
-        }
-    });
-
-    document.querySelector("#calendar-save-button").addEventListener("click", () => {
-        setModalState(calendarModal, true);
-    });
-
-    document.querySelectorAll("[data-calendar-provider]").forEach((button) => {
-        button.addEventListener("click", () => {
-            const calendarUrl = createCalendarUrl(button.dataset.calendarProvider);
-            window.open(calendarUrl, "_blank", "noopener,noreferrer");
-            setModalState(calendarModal, false);
-        });
-    });
-
-    document.querySelector("[data-download-calendar]").addEventListener(
-        "click",
-        () => {
-            createCalendarFile();
-            setModalState(calendarModal, false);
-        }
-    );
-
     document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") {
             return;
         }
         setModalState(drawer, false);
         setModalState(contactModal, false);
-        setModalState(calendarModal, false);
         setModalState(galleryModal, false);
         menuToggle.setAttribute("aria-expanded", "false");
     });

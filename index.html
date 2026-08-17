@@ -26,20 +26,23 @@
     </div>
 
     <div id="opening" class="opening" role="dialog" aria-label="청첩장 오프닝">
-        <div class="opening__paper">
-            <div class="opening__ribbon" aria-hidden="true">
-                <span class="opening__ribbon-knot"></span>
-                <span class="opening__ribbon-tail opening__ribbon-tail--left"></span>
-                <span class="opening__ribbon-tail opening__ribbon-tail--right"></span>
+        <div class="opening__scene" aria-hidden="true">
+            <div class="opening__card">
+                <p class="opening__small">AN INVITATION TO OUR WEDDING</p>
+                <p class="opening__card-title">Wedding Invitation</p>
+                <span class="opening__card-line"></span>
+                <p class="opening__names">
+                    <span data-groom-name>신랑 이름</span>
+                    <span class="opening__ampersand">&amp;</span>
+                    <span data-bride-name>신부 이름</span>
+                </p>
+                <p class="opening__date" data-wedding-date-label>2027. 01. 16 SAT</p>
             </div>
-            <p class="opening__small">AN INVITATION TO OUR WEDDING</p>
-            <p class="opening__names">
-                <span data-groom-name>신랑 이름</span>
-                <span class="opening__ampersand">&amp;</span>
-                <span data-bride-name>신부 이름</span>
-            </p>
-            <div class="opening__progress" aria-hidden="true">
-                <span></span>
+            <div class="opening__envelope">
+                <div class="opening__envelope-back"></div>
+                <div class="opening__envelope-flap"></div>
+                <div class="opening__envelope-front"></div>
+                <div class="opening__seal">W</div>
             </div>
         </div>
     </div>
@@ -53,8 +56,6 @@
                 alt="신랑과 신부의 대표 사진을 넣을 자리"
             >
             <div class="hero__veil"></div>
-            <div class="hero__flower hero__flower--left" aria-hidden="true"></div>
-            <div class="hero__flower hero__flower--right" aria-hidden="true"></div>
             <div class="hero__content">
                 <p class="hero__eyebrow">THE BEGINNING OF OUR FOREVER</p>
                 <h1 class="hero__title">We're getting married</h1>
@@ -266,30 +267,6 @@
             </div>
         </section>
 
-        <section id="share-moments" class="section action-section">
-            <p class="section__eyebrow">SHARE YOUR MOMENTS</p>
-            <h2 class="section__title">사진과 영상을 공유해주세요</h2>
-            <p class="section__body">
-                여러분이 담아주신 소중한 순간을<br>
-                저희와 함께 나눠주세요.
-            </p>
-            <button id="photo-share-button" class="button button--dark" type="button">
-                사진·영상 공유하기
-            </button>
-        </section>
-
-        <section id="reminder" class="section section--tint action-section">
-            <p class="section__eyebrow">WEDDING REMINDER</p>
-            <h2 class="section__title">예식일을 기억해주세요</h2>
-            <p class="section__body">
-                캘린더에 예식 일정을 저장하면<br>
-                소중한 날을 잊지 않고 확인할 수 있습니다.
-            </p>
-            <button id="calendar-save-button" class="button button--outline" type="button">
-                캘린더에 일정 추가
-            </button>
-        </section>
-
         <section id="account" class="section account-section">
             <p class="section__eyebrow">WITH GRATITUDE</p>
             <h2 class="section__title">마음 전하실 곳</h2>
@@ -380,8 +357,6 @@
                 <a href="#gallery">갤러리</a>
                 <a href="#movie">동영상</a>
                 <a href="#location">오시는 길</a>
-                <a href="#share-moments">사진 공유</a>
-                <a href="#reminder">리마인더</a>
                 <a href="#account">마음 전하실 곳</a>
             </div>
         </div>
@@ -404,36 +379,6 @@
                 <div><span>신랑 어머니</span><strong data-groom-mother>신랑 어머니</strong><a data-groom-mother-phone-link href="#">전화</a></div>
                 <div><span>신부 아버지</span><strong data-bride-father>신부 아버지</strong><a data-bride-father-phone-link href="#">전화</a></div>
                 <div><span>신부 어머니</span><strong data-bride-mother>신부 어머니</strong><a data-bride-mother-phone-link href="#">전화</a></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calendar-modal" class="modal" aria-hidden="true">
-        <button class="modal__backdrop" type="button" aria-label="캘린더 선택 닫기" data-close-calendar-modal></button>
-        <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="calendar-modal-title">
-            <div class="modal__header">
-                <div>
-                    <p>ADD TO CALENDAR</p>
-                    <h2 id="calendar-modal-title">캘린더 선택</h2>
-                </div>
-                <button type="button" aria-label="캘린더 선택 닫기" data-close-calendar-modal>닫기</button>
-            </div>
-            <p class="calendar-options__description">
-                사용하시는 캘린더를 선택해주세요.
-            </p>
-            <div class="calendar-options">
-                <button type="button" data-calendar-provider="google">
-                    <strong>Google 캘린더</strong>
-                    <span>Google 계정의 일정 등록 화면을 엽니다.</span>
-                </button>
-                <button type="button" data-calendar-provider="outlook">
-                    <strong>Outlook 캘린더</strong>
-                    <span>Microsoft Outlook 일정 등록 화면을 엽니다.</span>
-                </button>
-                <button type="button" data-download-calendar>
-                    <strong>Apple · 기타 캘린더</strong>
-                    <span>표준 일정 파일(.ics)을 열어 추가합니다.</span>
-                </button>
             </div>
         </div>
     </div>
